@@ -8,13 +8,27 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors: {
+        amazon_blue: "#131921",
+        food_red: "#f9572a",
+        food_yellow: "#ff9b05",
+        h1Text: "#e9e6e3",
+        pText: "#ddd4c6",
+      },
+      fontFamily: {
+        bodyFont: ["Montserrat", "sans-serif"],
+        htmlFont: ["Quicksand", "sans-serif"],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: any) {
+      addUtilities({
+        ".text-shadow": {
+          "text-shadow": "0 0 18px rgba(248, 190, 42, 0.8)",
+        },
+      });
+    },
+  ],
 };
 export default config;
