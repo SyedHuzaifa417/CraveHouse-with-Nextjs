@@ -9,7 +9,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        amazon_blue: "#131921",
         food_red: "#f9572a",
         food_yellow: "#ff9b05",
         h1Text: "#e9e6e3",

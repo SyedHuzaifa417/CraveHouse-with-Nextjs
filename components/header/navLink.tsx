@@ -21,7 +21,7 @@ const NavLink: React.FC<PropsWithChildren<Props>> = ({
           relative no-underline text-pText font-bold py-2 px-4 rounded-lg
           hover:bg-gradient-to-r hover:from-[#ff8a05] hover:to-[#f9b331]
           hover:bg-clip-text hover:text-transparent hover:text-shadow
-          transition-colors duration-300 ease-in-out
+          transition-colors duration-300 ease-in-out 
           ${
             path.startsWith(href)
               ? "bg-gradient-to-r from-[#ff8a05] to-[#f9b331] bg-clip-text text-transparent"
