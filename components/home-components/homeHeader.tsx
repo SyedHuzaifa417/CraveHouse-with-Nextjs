@@ -21,16 +21,16 @@ const HomeHeader = () => {
           </div>
           <div className="text-xl md:text-2xl flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-9 items-center">
             <Link
-              href="/meals"
+              href="/reservations"
               className="inline-block text-food_yellow hover:text-orange-300"
             >
               Make a Reservation
             </Link>
             <Link
-              href="/meals"
+              href="/menu"
               className="inline-block w-max py-2 px-4 rounded-lg bg-gradient-to-r from-food_red to-food_yellow text-white font-bold no-underline hover:from-red-500 hover:to-orange-500"
             >
-              Explore Meals
+              Explore Menu
             </Link>
           </div>
         </div>

@@ -5,6 +5,12 @@ import About2 from "@/assets/about2.jpg";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { VscSignIn } from "react-icons/vsc";
 import { IoRestaurantOutline } from "react-icons/io5";
+import { Metadata } from "next";
+import Reviews from "@/components/home-components/reviews";
+
+export const metadata: Metadata = {
+  title: "About",
+};
 
 const About = () => {
   return (
@@ -113,10 +119,9 @@ const About = () => {
           Us?
         </h2>
         <p className="text-base sm:text-lg md:text-xl mb-4 text-center">
-          CraveHouse provides an extensive list of restaurants, covering
-          everything from local favorites to fine dining establishments. We make
-          it easy for you to explore a wide range of dining options, all in one
-          place.
+          CraveHouse provides an extensive list of meals, covering everything
+          from local favorites to fine dining establishments. We make it easy
+          for you to explore a wide range of dining options, all in one place.
         </p>
         <p className="text-base sm:text-lg md:text-xl mb-4  text-center">
           Our platform is not just about discovering food; it&apos;s about
@@ -126,9 +131,9 @@ const About = () => {
         </p>
         <p className="text-base sm:text-lg md:text-xl mb-4 text-center ">
           Our website is designed with you in mind. With an easy-to-navigate
-          interface, making reservations, finding restaurants, and ordering food
-          has never been simpler. Enjoy a seamless and hassle-free experience
-          with CraveHouse.
+          interface, making reservations, finding meals, and ordering food has
+          never been simpler. Enjoy a seamless and hassle-free experience with
+          CraveHouse.
         </p>
         <p className="text-base sm:text-lg md:text-xl mb-4 text-center">
           Read genuine reviews and recommendations from fellow food enthusiasts.
@@ -137,10 +142,11 @@ const About = () => {
         </p>
         <p className="text-base sm:text-lg md:text-xl mb-4 text-center">
           Be the first to know about exclusive events, promotions, and offers
-          from your favorite restaurants. CraveHouse brings you closer to the
+          from your favorite restaurant. CraveHouse brings you closer to the
           culinary happenings in Multan.
         </p>
       </section>
+      <Reviews />
     </div>
   );
 };

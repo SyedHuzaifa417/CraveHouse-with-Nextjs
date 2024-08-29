@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 
-const PrivacyPolicyDrawer = dynamic(() => import("../privacy"), {
+const PrivacyPolicyDrawer = dynamic(() => import("./privacy"), {
   ssr: false, //When ssr is set to false, the component will only be rendered on the client side (in the browser), not on the server.
   loading: () => <p className="text-pText">Loading...</p>,
 });
@@ -72,8 +72,11 @@ function Footer() {
               <h3 className="font-semibold mb-2 text-h1Text">Quick links</h3>
               <ul className="text-sm">
                 <li>
-                  <Link href="/" className="text-gray-300 hover:text-white">
-                    Home
+                  <Link
+                    href="/reservations"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Reservations
                   </Link>
                 </li>
                 <li>
@@ -85,11 +88,8 @@ function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/meals"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Meals
+                  <Link href="/menu" className="text-gray-300 hover:text-white">
+                    Menu
                   </Link>
                 </li>
               </ul>

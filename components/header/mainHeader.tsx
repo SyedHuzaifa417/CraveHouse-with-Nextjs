@@ -54,11 +54,16 @@ const Header = () => {
 
         {/* Navigation for medium and large screens */}
         <div className="flex items-center gap-8">
-          <nav className="hidden lg:block">
+          <nav className="hidden xl:block">
             <ul className="list-none m-0 p-0 flex items-center gap-6 font-bodyFont text-xl">
               <li>
-                <NavLink onClick={() => {}} href="/meals">
-                  Meals
+                <NavLink onClick={() => {}} href="/menu">
+                  Menu
+                </NavLink>
+              </li>
+              <li>
+                <NavLink onClick={() => {}} href="/reservations">
+                  Reservation
                 </NavLink>
               </li>
               <li>
@@ -111,7 +116,7 @@ const Header = () => {
 
           {/* Hamburger menu for small screens */}
           <button
-            className="lg:hidden text-h1Text hover:text-food_yellow text-3xl"
+            className="xl:hidden text-h1Text hover:text-food_yellow text-3xl"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <TbMenuDeep />
@@ -131,8 +136,16 @@ const Header = () => {
             </button>
             <ul className="list-none m-0 p-0 flex flex-col items-center justify-center gap-8 font-bodyFont">
               <li>
-                <NavLink href="/meals" onClick={() => setIsMenuOpen(false)}>
-                  Meals
+                <NavLink href="/menu" onClick={() => setIsMenuOpen(false)}>
+                  Menu
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  href="/reservations"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Reservation
                 </NavLink>
               </li>
               <li>
