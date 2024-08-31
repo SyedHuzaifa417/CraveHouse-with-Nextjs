@@ -8,12 +8,14 @@ import NavLink from "./navLink";
 import { TbMenuDeep } from "react-icons/tb";
 import { CgClose } from "react-icons/cg";
 import { FaSignOutAlt, FaUserAlt } from "react-icons/fa";
-import { RiShoppingBag4Fill } from "react-icons/ri";
+import Cart from "@/components/cart/cart";
+import { useSession, signOut } from "next-auth/react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -30,6 +32,14 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      await signOut({ callbackUrl: "/" });
+    }
+  };
+
   return (
     <>
       <MainHeaderBackground />
@@ -79,32 +89,36 @@ const Header = () => {
             </ul>
           </nav>
           <div className="flex items-center gap-6 ml-20">
-            <NavLink onClick={() => {}} href="/cart">
-              <RiShoppingBag4Fill className="text-pText text-[1.4rem] hover:text-food_yellow  transition-all duration-300" />
-              <span className="absolute top-5 -right-4 text-white bg-food_yellow rounded-full px-1 text-[0.7rem] z-20">
-                5
-              </span>
-            </NavLink>
+            <Cart />
             <div className="relative" ref={dropdownRef}>
-              <button
-                onMouseEnter={() => setIsProfileDropdownOpen(true)}
-                className="focus:outline-none"
-              >
-                <FaUserAlt className="text-pText text-[1.4rem] hover:text-food_yellow transition-all duration-300" />
-              </button>
-              {isProfileDropdownOpen && (
+              {status === "loading" ? (
+                <FaUserAlt className=" text-pText text-[1.4rem] animate-pulse mb-2" />
+              ) : session ? (
+                <FaSignOutAlt
+                  className="text-pText text-[1.7rem] hover:text-food_yellow transition-all duration-300"
+                  onClick={handleLogout}
+                />
+              ) : (
+                <button
+                  onMouseEnter={() => setIsProfileDropdownOpen(true)}
+                  className="focus:outline-none"
+                >
+                  <FaUserAlt className="text-pText text-[1.4rem] hover:text-food_yellow transition-all duration-300" />
+                </button>
+              )}
+              {isProfileDropdownOpen && !session && (
                 <div
                   className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-20"
                   onMouseLeave={() => setIsProfileDropdownOpen(false)}
                 >
                   <Link
-                    href="/profile?type=admin"
+                    href="/login?type=admin"
                     className="block px-4 py-2 text-md font-bold font-bodyFont text-h1Text  hover:bg-gray-600"
                   >
                     Admin
                   </Link>
                   <Link
-                    href="/profile?type=user"
+                    href="/login?type=user"
                     className="block px-4 py-2 text-md font-bold font-bodyFont text-h1Text  hover:bg-gray-600"
                   >
                     User
