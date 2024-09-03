@@ -162,7 +162,7 @@ export default function Login() {
               <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
             </svg>
           )}
-          Sign in with Google
+          Continue with Google
           <FcGoogle className="text-2xl" />
         </button>
         <p className="mt-4 text-center text-sm text-gray-300">

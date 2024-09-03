@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -32,10 +33,12 @@ const Cart = () => {
             <p className="text-lg text-pText mb-4">
               You have not added anything in your cart!
             </p>
-            <Link href="/menu">
-              <button className="px-4 py-2 bg-food_yellow text-h1Text text-lg font-semibold hover:bg-food_red rounded-xl">
-                Browse
-              </button>
+            <Link href="/menu" passHref>
+              <SheetClose asChild>
+                <button className="px-4 py-2 bg-food_yellow text-h1Text text-lg font-semibold hover:bg-food_red rounded-xl">
+                  Browse
+                </button>
+              </SheetClose>
             </Link>
           </SheetDescription>
         </SheetHeader>

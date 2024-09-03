@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface MenuItem {
   id: string;
@@ -8,8 +10,8 @@ interface MenuItem {
   price: number;
   originalPrice?: number;
   description: string;
-  image: string;
-  category: string;
+  imageUrl: string;
+  categoryId: string;
 }
 
 interface Category {
@@ -17,61 +19,38 @@ interface Category {
   name: string;
 }
 
-const categories: Category[] = [
-  { id: "popular", name: "Popular" },
-  { id: "crazy-deals", name: "Crazy Deals" },
-  { id: "shawarma", name: "Shawarma" },
-  { id: "chinese", name: "Chinese" },
-  { id: "burgers-sandwiches", name: "Burgers & Sandwiches" },
-  { id: "platters", name: "Platters" },
-  { id: "soup", name: "Soup" },
-  { id: "rice", name: "Rice" },
-];
-
-const menuItems: MenuItem[] = [
-  {
-    id: "1",
-    name: "Pizza Sandwich",
-    price: 315,
-    originalPrice: 450,
-    description:
-      "Black olives, vegetables, cheese, chicken, fries & mayo garlic",
-    image: "/path-to-pizza-sandwich-image.jpg",
-    category: "popular",
-  },
-  {
-    id: "2",
-    name: "Chow Mein",
-    price: 493.5,
-    originalPrice: 705,
-    description: "Spaghetti, chicken, vegetable & spices",
-    image: "/path-to-chow-mein-image.jpg",
-    category: "chinese",
-  },
-  {
-    id: "3",
-    name: " Mein",
-    price: 493.5,
-    originalPrice: 705,
-    description: "Spaghetti, chicken, vegetable & spices",
-    image: "/path-to-chow-mein-image.jpg",
-    category: "rice",
-  },
-  {
-    id: "4",
-    name: " Mein",
-    price: 493.5,
-    originalPrice: 705,
-    description: "Spaghetti, chicken, vegetable & spices",
-    image: "/path-to-chow-mein-image.jpg",
-    category: "popular",
-  },
-  // Add more menu items here...
-];
-
 const MenuItems: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState("popular");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [activeCategory, setActiveCategory] = useState("");
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); //[key:string ]=id, this ref here is of type object i-e. divElement
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categoriesResponse, menuItemsResponse] = await Promise.all([
+          axios.get<Category[]>("/api/menu/categories"),
+          axios.get<MenuItem[]>("/api/menu/menu-items"),
+        ]);
+
+        const sortedCategories = categoriesResponse.data.sort((a, b) =>
+          a.id.localeCompare(b.id)
+        );
+
+        setCategories(sortedCategories);
+        setMenuItems(menuItemsResponse.data);
+
+        if (sortedCategories.length > 0) {
+          setActiveCategory(sortedCategories[0].id);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.loading("Fetching Menu");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,7 +73,7 @@ const MenuItems: React.FC = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeCategory]);
+  }, [activeCategory, categories]);
 
   const scrollToCategory = (categoryId: string) => {
     categoryRefs.current[categoryId]?.scrollIntoView({ behavior: "smooth" });
@@ -102,7 +81,7 @@ const MenuItems: React.FC = () => {
 
   return (
     <div className="w-full">
-      <nav className="sticky top-0 p-4 z-10 overflow-x-auto bg-[#282c34] shadow-lg shadow-gray-800 rounded-lg">
+      <nav className="sticky top-0 p-4 z-10 overflow-x-auto bg-[#282c34] shadow-lg shadow-gray-800 rounded-lg scrollbar-thin scrollbar-thumb-food_red scrollbar-track-gray-700">
         <div className="flex space-x-4">
           {categories.map((category) => (
             <button
@@ -132,11 +111,11 @@ const MenuItems: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {menuItems
-                .filter((item) => item.category === category.id)
+                .filter((item) => item.categoryId === category.id)
                 .map((item) => (
                   <div
                     key={item.id}
-                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex"
+                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex justify-between"
                   >
                     <div className="flex-grow">
                       <h3 className="text-xl font-semibold text-white">
@@ -156,16 +135,17 @@ const MenuItems: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    <div className="w-24 h-24 relative ml-4">
+                    <div className="w-48 h-28 relative ml-4">
                       <Image
-                        src={item.image}
+                        src={item.imageUrl}
                         alt={item.name}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        style={{ objectFit: "cover" }}
                         className="rounded-lg"
                       />
                     </div>
-                    <button className="relative -bottom-16 right-0 bg-food_yellow p-2 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl">
+                    <button className="relative -bottom-24 -right-4 bg-food_yellow px-2 py-0 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">
                       +
                     </button>
                   </div>

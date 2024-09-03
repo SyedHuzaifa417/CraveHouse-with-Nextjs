@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,14 +10,6 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-
-// model User {
-//   id        Int      @id @default(autoincrement())
-//   email     String   @unique
-//   username  String   @unique
-//   password  String
-//   createdAt DateTime @default(now())
-// }
 
 model Account {
   id                String  @id @default(cuid())
@@ -53,16 +42,18 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now())
-  username      String    @unique
-  password      String?
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  username          String    @unique
+  password          String?
+  name              String?
+  email             String?   @unique
+  emailVerified     DateTime? @map("email_verified")
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  recipes           Recipe[]
+  isCommunityMember Boolean   @default(false)
 
   @@map("users")
 }
@@ -74,4 +65,73 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  menuItems MenuItem[]
+  recipes   Recipe[]
+
+  @@map("categories")
+}
+
+model MenuItem {
+  id            String   @id @default(cuid())
+  name          String
+  price         Float
+  originalPrice Float?
+  description   String
+  imageUrl      String
+  category      Category @relation(fields: [categoryId], references: [id])
+  categoryId    String
+
+  @@map("menu_items")
+}
+
+model Booking {
+  id                  String   @id @default(cuid())
+  date                DateTime
+  time                String
+  people              Int
+  looking             String
+  firstName           String
+  lastName            String
+  companyName         String?
+  mobile              String
+  email               String
+  specialRequirements String[]
+  requests            String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  city      String
+  createdAt DateTime @default(now())
+}
+
+model Recipe {
+  id           String   @id @default(cuid())
+  title        String
+  image        String
+  description  String
+  ingredients  String[]
+  instructions String[]
+  servings     Int
+  cookingTime  Int
+  category     Category @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  date         DateTime @default(now())
+  author       User     @relation(fields: [authorId], references: [id])
+  authorId     String
+  cookingNote  String?
+
+  @@map("recipes")
 }

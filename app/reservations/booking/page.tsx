@@ -12,14 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface BookingDetails {
   date: Date;
@@ -32,7 +27,6 @@ interface BookingDetails {
   mobile: string;
   email: string;
   specialRequirements: string[];
-  requests: string;
 }
 
 const BookingProcess: React.FC = () => {
@@ -48,10 +42,71 @@ const BookingProcess: React.FC = () => {
     mobile: "",
     email: "",
     specialRequirements: [],
-    requests: "",
   });
+  const router = useRouter();
 
-  const nextStep = () => setStep(step + 1);
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields.", {
+        position: "bottom-right",
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/reservation", bookingDetails);
+      toast.success("The reservation has been made", {
+        position: "bottom-right",
+      });
+      setBookingDetails({
+        date: new Date(),
+        time: "",
+        people: 2,
+        looking: "",
+        firstName: "",
+        lastName: "",
+        companyName: "",
+        mobile: "",
+        email: "",
+        specialRequirements: [],
+      });
+
+      router.push("/");
+    } catch (error) {
+      toast.error("Failed to make reservation. Please try again.", {
+        position: "bottom-right",
+      });
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (step === 0) {
+      return (
+        bookingDetails.date !== null &&
+        bookingDetails.time !== "" &&
+        bookingDetails.looking !== ""
+      );
+    } else if (step === 1) {
+      const requiredFields: (keyof BookingDetails)[] = [
+        "firstName",
+        "lastName",
+        "mobile",
+        "email",
+      ];
+      return requiredFields.every((field) => bookingDetails[field] !== "");
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields.", {
+        position: "bottom-right",
+      });
+      return;
+    }
+    setStep(step + 1);
+  };
   const prevStep = () => setStep(step - 1);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,6 +272,7 @@ const BookingProcess: React.FC = () => {
               value={bookingDetails.firstName}
               onChange={handleInputChange}
               className="border-none bg-slate-600 text-pText"
+              required
             />
           </div>
           <div>
@@ -229,26 +285,21 @@ const BookingProcess: React.FC = () => {
               value={bookingDetails.lastName}
               onChange={handleInputChange}
               className="border-none bg-slate-600 text-pText"
+              required
             />
           </div>
           <div className="flex space-x-4">
-            <div className="w-1/4">
-              <Select>
-                <SelectTrigger className="border-none bg-slate-600 text-pText">
-                  <SelectValue placeholder="PK +92" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PK">PK +92</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
             <div className="flex-1">
+              <Label htmlFor="mobile" className="text-pText">
+                Mobile *
+              </Label>
               <Input
                 type="tel"
                 name="mobile"
                 value={bookingDetails.mobile}
                 onChange={handleInputChange}
                 className="border-none bg-slate-600 text-pText"
+                required
               />
             </div>
           </div>
@@ -263,6 +314,7 @@ const BookingProcess: React.FC = () => {
               value={bookingDetails.email}
               onChange={handleInputChange}
               className="border-none bg-slate-600 text-pText"
+              required
             />
           </div>
           <div>
@@ -346,7 +398,7 @@ const BookingProcess: React.FC = () => {
         </div>
         <div>
           <h3 className="font-semibold text-pText">Company Name</h3>
-          <p>{bookingDetails.companyName}</p>
+          <p>{bookingDetails.companyName || "N/A"}</p>
         </div>
         <div>
           <h3 className="font-semibold text-pText">Mobile</h3>
@@ -376,19 +428,22 @@ const BookingProcess: React.FC = () => {
       <div>
         <h3 className="font-semibold text-pText">Special Requirements</h3>
         <div className="mt-2">
-          {bookingDetails.specialRequirements.map((req, index) => (
-            <span
-              key={index}
-              className="inline-block bg-food_red text-orange-100 px-2 py-1 rounded mr-2 mb-2"
-            >
-              {req}
-            </span>
-          ))}
+          {bookingDetails.specialRequirements.length > 0 ? (
+            bookingDetails.specialRequirements.map((req, index) => (
+              <span
+                key={index}
+                className="inline-block bg-food_red text-orange-100 px-2 py-1 rounded mr-2 mb-2"
+              >
+                {req}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-400">None</p>
+          )}
         </div>
       </div>
     </div>
   );
-
   return (
     <div className="flex flex-col gap-8 mx-auto my-8 w-full max-w-4xl">
       <Toaster
@@ -434,11 +489,7 @@ const BookingProcess: React.FC = () => {
           </Button>
         ) : (
           <Button
-            onClick={() => {
-              toast.success("The reservation has been made", {
-                position: "bottom-right",
-              });
-            }}
+            onClick={handleSubmit}
             className="mx-auto bg-orange-600 text-white"
           >
             BOOK NOW

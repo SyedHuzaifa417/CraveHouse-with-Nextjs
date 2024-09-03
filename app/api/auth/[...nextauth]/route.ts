@@ -67,6 +67,33 @@ export const authOptions: NextAuthOptions = {
           include: { accounts: true },
         });
 
+        if (!existingUser) {
+          // Create a new user
+          const username =
+            profile.email.split("@")[0] +
+            Math.random().toString(36).slice(2, 7);
+          const newUser = await db.user.create({
+            data: {
+              email: profile.email,
+              name: profile.name,
+              username: username,
+              image: profile.image,
+              accounts: {
+                create: {
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                },
+              },
+            },
+          });
+          return true;
+        }
         if (existingUser) {
           // Check if the user already has a Google account
           const existingGoogleAccount = existingUser.accounts.find(
@@ -86,7 +113,7 @@ export const authOptions: NextAuthOptions = {
               },
             });
           } else {
-            // Create a new account if it doesn't exist
+            // unessential, will ommit later
             await db.account.create({
               data: {
                 userId: existingUser.id,
@@ -107,25 +134,37 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.username = user.username;
       }
-      if (account && account.provider === "google") {
-        token.accessToken = account.access_token;
+
+      // Always fetch the latest user data from the database
+      if (token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id },
+          select: { isCommunityMember: true },
+        });
+        token.isCommunityMember = dbUser?.isCommunityMember ?? false;
       }
+
+      // Handle the "update" event to refresh the token
+      if (trigger === "update" && session?.isCommunityMember !== undefined) {
+        token.isCommunityMember = session.isCommunityMember;
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
+        session.user.isCommunityMember = token.isCommunityMember as boolean;
       }
       return session;
     },
   },
-  debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);

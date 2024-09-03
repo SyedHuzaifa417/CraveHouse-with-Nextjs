@@ -8,6 +8,8 @@ import { IoIosSend } from "react-icons/io";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
+import { useModal } from "../ui/Modal";
+import NewsletterModal from "../home-components/newsletterModal";
 
 const PrivacyPolicyDrawer = dynamic(() => import("./privacy"), {
   ssr: false, //When ssr is set to false, the component will only be rendered on the client side (in the browser), not on the server.
@@ -17,6 +19,7 @@ const PrivacyPolicyDrawer = dynamic(() => import("./privacy"), {
 function Footer() {
   const [isMounted, setIsMounted] = useState(false);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const { openModal } = useModal();
 
   useEffect(() => {
     setIsMounted(true);
@@ -139,25 +142,29 @@ function Footer() {
               <h3 className="font-semibold mb-2 text-h1Text">Get In Touch</h3>
               <ul className="text-sm">
                 <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Feedback
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Complaints
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/community"
+                  <button
+                    onClick={() => openModal(<NewsletterModal />)}
                     className="text-gray-300 hover:text-white"
                   >
-                    <button className="flex items-center gap-4 border w-max px-3 py-1 rounded-full my-2">
-                      email address
-                      <IoIosSend />
-                    </button>
-                  </Link>
+                    Feedback
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => openModal(<NewsletterModal />)}
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Complaints
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => openModal(<NewsletterModal />)}
+                    className="flex items-center gap-4 border w-max px-3 py-1 rounded-full my-2 text-gray-300 hover:text-white"
+                  >
+                    email address
+                    <IoIosSend />
+                  </button>
                 </li>
               </ul>
             </div>

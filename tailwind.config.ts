@@ -46,6 +46,7 @@ const config: Config = {
     },
   },
   plugins: [
+    require("tailwind-scrollbar"),
     require("tailwindcss-animate"),
     function ({ addUtilities }: any) {
       addUtilities({

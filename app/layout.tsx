@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "../components/header/mainHeader";
 import Footer from "@/components/footer/footer";
 import { AuthWrapper } from "@/components/AuthWrapper";
+import { ModalProvider } from "@/components/ui/Modal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`flex flex-col min-h-screen ${inter.className}`}>
         <AuthWrapper>
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
+          <ModalProvider>
+            <Header />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </ModalProvider>
         </AuthWrapper>
       </body>
     </html>

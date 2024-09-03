@@ -1,11 +1,15 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import React from "react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const metadata: Metadata = {
   title: "Reservation",
 };
-const Reservations = () => {
+
+const Reservations = async () => {
+  const session = await getServerSession(authOptions);
+
   return (
     <main className=" p-6">
       <div className="max-w-4xl mx-auto bg-gray-700/45 p-8 rounded-lg shadow-lg shadow-gray-700/75 text-center">
@@ -26,13 +30,21 @@ const Reservations = () => {
           <em>Please note:- </em> Telephonic bookings can only be made via
           phone.
         </p>
-        <Link
-          href="/reservations/booking"
-          className="inline-block text-xl underline text-food_yellow hover:text-orange-300"
-        >
-          Make a Reservation{" "}
-        </Link>
-        {/* Add more profile content here */}
+        {session ? (
+          <Link
+            href="/reservations/booking"
+            className="inline-block text-xl underline text-food_yellow hover:text-orange-300"
+          >
+            Make a Reservation
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="inline-block text-xl underline text-food_yellow hover:text-orange-300"
+          >
+            Login to Make a Reservation
+          </Link>
+        )}
       </div>
     </main>
   );
