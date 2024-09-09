@@ -10,6 +10,12 @@ export async function GET() {
         id: true,
         title: true,
         description: true,
+        ingredients: true,
+        instructions: true,
+        date: true,
+        servings: true,
+        cookingTime: true,
+        cookingNote: true,
         image: true,
         category: {
           select: {

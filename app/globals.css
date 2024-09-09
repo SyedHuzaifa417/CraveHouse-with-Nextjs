@@ -9,6 +9,8 @@
 
 html {
   font-family: "Quicksand", sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: #ff6347 #3a3939;
 }
 
 body {

@@ -347,7 +347,7 @@ const BookingProcess: React.FC = () => {
             "Corporate Function",
             "Children",
             "Engagement",
-          ].map((item) => (
+          ].map((item: any) => (
             <div key={item} className="flex items-center">
               <Checkbox
                 id={item.toLowerCase().replace(" ", "-")}

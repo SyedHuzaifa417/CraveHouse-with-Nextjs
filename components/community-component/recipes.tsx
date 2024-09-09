@@ -11,6 +11,12 @@ interface Recipe {
   id: string;
   title: string;
   description: string;
+  ingredients: string[];
+  instructions: string[];
+  cookingTime: number;
+  date: Date;
+  servings: number;
+  cookingNote: string;
   image: string;
   category: {
     id: string;
@@ -39,7 +45,11 @@ const Recipes: React.FC = () => {
   const fetchRecipes = useCallback(async () => {
     try {
       const recipeResponse = await axios.get<Recipe[]>("/api/community");
-      setRecipes(recipeResponse.data);
+      const recipesWithParsedDates = recipeResponse.data.map((recipe) => ({
+        ...recipe,
+        date: new Date(recipe.date),
+      }));
+      setRecipes(recipesWithParsedDates);
       setFilteredRecipes(recipeResponse.data);
     } catch (error) {
       console.error("Error fetching recipes:", error);
@@ -141,17 +151,28 @@ const Recipes: React.FC = () => {
                     objectFit="cover"
                     className="rounded-lg"
                   />
-                  {/* Positioning the bookmark icon in the top-right corner */}
+
                   <span className="absolute top-2 right-2 text-white bg-gray-800 p-1 rounded-sm hover:text-food_yellow">
                     <FaBookmark />
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold text-pText mb-2">
+                <h3 className="text-lg font-semibold text-pText mb-2  overflow-hidden whitespace-nowrap text-ellipsis">
                   {recipe.title}
                 </h3>
                 <p className="text-sm text-gray-400  overflow-hidden whitespace-nowrap text-ellipsis">
                   {recipe.description}
                 </p>
+                <div className="flex items-center justify-between mt-2">
+                  {" "}
+                  <p className="text-sm text-gray-300 mt-2">
+                    By: {recipe.author.username}
+                  </p>
+                  <p className="text-pText text-sm mt-2">
+                    {recipe.date
+                      ? new Date(recipe.date).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

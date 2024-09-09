@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import logoImg from "@/assets/logo.png";
+// import profile from "@/assets/profile.jpg"; //for <AvatarImage  src={profile }/>
 import Image from "next/image";
 import MainHeaderBackground from "./MainHeaderBackground";
 import NavLink from "./navLink";
@@ -10,33 +11,49 @@ import { CgClose } from "react-icons/cg";
 import { FaSignOutAlt, FaUserAlt } from "react-icons/fa";
 import Cart from "@/components/cart/cart";
 import { useSession, signOut } from "next-auth/react";
+import { useAppDispatch } from "@/store/useAppDispatch";
+import { resetCart } from "@/store/cartSlice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MdOutlineBookmarks, MdOutlineSettings } from "react-icons/md";
+import { HiOutlineSupport } from "react-icons/hi";
+import { FiSend } from "react-icons/fi";
+import { useModal } from "../ui/Modal";
+import Profile from "./Profile";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const dispatch = useAppDispatch();
+  const { openModal } = useModal();
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
     if (confirmLogout) {
+      dispatch(resetCart());
       await signOut({ callbackUrl: "/" });
+    }
+  };
+
+  const handleShare = () => {
+    const websiteUrl = window.location.href;
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Check out this awesome website!",
+          text: "Discover amazing content on our website.",
+          url: websiteUrl,
+        })
+        .catch(console.error);
+    } else {
+      alert("Web Share API not supported on this browser.");
     }
   };
 
@@ -90,42 +107,86 @@ const Header = () => {
           </nav>
           <div className="flex items-center gap-6 ml-20">
             <Cart />
-            <div className="relative" ref={dropdownRef}>
-              {status === "loading" ? (
-                <FaUserAlt className=" text-pText text-[1.4rem] animate-pulse mb-2" />
-              ) : session ? (
-                <FaSignOutAlt
-                  className="text-pText text-[1.7rem] hover:text-food_yellow transition-all duration-300"
-                  onClick={handleLogout}
-                />
-              ) : (
-                <button
-                  onMouseEnter={() => setIsProfileDropdownOpen(true)}
-                  className="focus:outline-none"
-                >
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                {status === "loading" ? (
+                  <FaUserAlt className="text-pText text-[1.4rem] animate-pulse " />
+                ) : session ? (
+                  <Avatar>
+                    <AvatarFallback>
+                      {session.user?.username?.[0] || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
                   <FaUserAlt className="text-pText text-[1.4rem] hover:text-food_yellow transition-all duration-300" />
-                </button>
-              )}
-              {isProfileDropdownOpen && !session && (
-                <div
-                  className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-20"
-                  onMouseLeave={() => setIsProfileDropdownOpen(false)}
-                >
-                  <Link
-                    href="/login?type=admin"
-                    className="block px-4 py-2 text-md font-bold font-bodyFont text-h1Text  hover:bg-gray-600"
-                  >
-                    Admin
-                  </Link>
-                  <Link
-                    href="/login?type=user"
-                    className="block px-4 py-2 text-md font-bold font-bodyFont text-h1Text  hover:bg-gray-600"
-                  >
-                    User
-                  </Link>
-                </div>
-              )}
-            </div>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {session ? (
+                  <>
+                    <DropdownMenuLabel>
+                      Hello {session.user?.username || "User"}!
+                    </DropdownMenuLabel>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="flex items-center gap-1"
+                      onSelect={() => openModal(<Profile />)}
+                    >
+                      <MdOutlineSettings />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <button
+                        onClick={handleShare}
+                        className="flex items-center gap-1"
+                      >
+                        <FiSend />
+                        Invite
+                      </button>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={
+                          "https://www.linkedin.com/in/syed-huzaifa-bukhari-b866421b3/"
+                        }
+                        target="_blank"
+                        className="flex items-center gap-1"
+                      >
+                        <HiOutlineSupport />
+                        Support
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => openModal(<Cart />)}
+                      className="flex items-center gap-1"
+                    >
+                      <MdOutlineBookmarks /> Bookmarks
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={handleLogout}>
+                      <FaSignOutAlt className="mr-2" /> Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuLabel>Login / Registor</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link href="/login?type=admin">Admin</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/login?type=user">User</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem>
+                      <Link href="/register">Register</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Hamburger menu for small screens */}

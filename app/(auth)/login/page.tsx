@@ -26,43 +26,52 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
-      if (type === "admin") {
-        // Admin login check
-        if (email === "admin123@admin.com" && password === "admin123") {
-          // Correct admin credentials
+      const adminCheck = await fetch("/api/auth/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const adminData = await adminCheck.json();
+
+      const isValidAttempt =
+        (type === "admin" && adminData.isAdmin) ||
+        (type !== "admin" && !adminData.isAdmin);
+
+      if (!isValidAttempt) {
+        setError(
+          type === "admin"
+            ? "Invalid admin credentials"
+            : "No access for admin accounts"
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.ok) {
+        if (type === "admin") {
           router.push("/admin");
-          return;
         } else {
-          // Wrong admin credentials
-          setError("Invalid admin credentials");
-          return;
-        }
-      } else {
-        // Regular user login check
-        if (email === "admin123@admin.com" && password === "admin123") {
-          // Prevent admin credentials on user login type
-          setError("No Access");
-          return;
-        }
-
-        const result = await signIn("credentials", {
-          redirect: false,
-          email,
-          password,
-        });
-
-        if (result?.error) {
-          // Error during sign-in process
-          setError(result.error);
-        } else if (result?.ok) {
-          // Successful login for regular user
           router.push("/");
         }
       }
     } catch (error: any) {
       setError("An error occurred during login");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,7 +80,7 @@ export default function Login() {
       setIsLoading(true);
       await signIn("google", { callbackUrl: "/" });
     } catch (error) {
-      setIsLoading(false);
+      setError("An error occurred during Google Sign-In");
     } finally {
       setIsLoading(false);
     }
@@ -127,8 +136,9 @@ export default function Login() {
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-food_red hover:bg-food_red/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-food_red"
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
         <p className="text-gray-500 my-3 hidden md:block">
@@ -139,7 +149,7 @@ export default function Login() {
           className="flex items-center justify-center gap-4 mt-4 w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 focus:bg-gray-700"
           disabled={isLoading}
         >
-          {isLoading && (
+          {isLoading ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -147,9 +157,9 @@ export default function Login() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="h-4 w-4 mr-2 animate-spin text-white"
             >
               <line x1="12" y1="2" x2="12" y2="6"></line>
@@ -161,8 +171,9 @@ export default function Login() {
               <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
               <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
             </svg>
+          ) : (
+            "Continue with Google"
           )}
-          Continue with Google
           <FcGoogle className="text-2xl" />
         </button>
         <p className="mt-4 text-center text-sm text-gray-300">
@@ -173,6 +184,10 @@ export default function Login() {
           >
             Register here
           </Link>
+        </p>
+        <p className="mt-4 mx-auto text-center text-xs text-gray-300 w-60">
+          By clicking continue, you agree to our Terms of Service and Privacy
+          Policy.
         </p>
       </div>
     </main>

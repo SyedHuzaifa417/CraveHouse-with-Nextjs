@@ -16,6 +16,15 @@ export async function POST(req: Request) {
 
     const user = await db.user.findUnique({
       where: { email },
+      include: {
+        bookmarkedRecipes: {
+          select: {
+            id: true,
+            title: true,
+            image: true,
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -40,7 +49,16 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ message: "Login successful" }, { status: 200 });
+    // Remove sensitive information before sending the response
+    const { password: _, ...safeUser } = user;
+
+    return NextResponse.json(
+      {
+        message: "Login successful",
+        user: safeUser,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

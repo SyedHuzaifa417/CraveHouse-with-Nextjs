@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAppDispatch } from "@/store/useAppDispatch";
+import { addToCart } from "@/store/cartSlice";
 
 interface MenuItem {
   id: string;
@@ -24,6 +26,7 @@ const MenuItems: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("");
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); //[key:string ]=id, this ref here is of type object i-e. divElement
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +82,11 @@ const MenuItems: React.FC = () => {
     categoryRefs.current[categoryId]?.scrollIntoView({ behavior: "smooth" });
   }; //It uses the categoryRefs object to find the DOM element for the given categoryId and calls scrollIntoView on it with smooth scrolling behavior.
 
+  const handleAddToCart = (item: MenuItem) => {
+    dispatch(addToCart(item));
+    toast.success(`${item.name} added to cart`);
+  };
+
   return (
     <div className="w-full">
       <nav className="sticky top-0 p-4 z-10 overflow-x-auto bg-[#282c34] shadow-lg shadow-gray-800 rounded-lg scrollbar-thin scrollbar-thumb-food_red scrollbar-track-gray-700">
@@ -103,8 +111,8 @@ const MenuItems: React.FC = () => {
             key={category.id}
             ref={(el) => {
               categoryRefs.current[category.id] = el;
-            }} // el is divElement
-            className="mb-12"
+            }}
+            className="mb-0"
           >
             <h2 className="text-2xl font-bold mb-4 text-food_yellow">
               {category.name}
@@ -115,7 +123,7 @@ const MenuItems: React.FC = () => {
                 .map((item) => (
                   <div
                     key={item.id}
-                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex justify-between"
+                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex justify-between relative mb-10"
                   >
                     <div className="flex-grow">
                       <h3 className="text-xl font-semibold text-white">
@@ -135,7 +143,7 @@ const MenuItems: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    <div className="w-48 h-28 relative ml-4">
+                    <div className="w-72 h-32 relative ml-4">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
@@ -145,7 +153,10 @@ const MenuItems: React.FC = () => {
                         className="rounded-lg"
                       />
                     </div>
-                    <button className="relative -bottom-24 -right-4 bg-food_yellow px-2 py-0 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">
+                    <button
+                      className="absolute -bottom-4 -right-4 bg-food_yellow px-4 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl hover:bg-food_red"
+                      onClick={() => handleAddToCart(item)}
+                    >
                       +
                     </button>
                   </div>

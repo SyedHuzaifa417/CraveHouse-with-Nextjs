@@ -20,6 +20,7 @@ interface Booking {
 
 const AdminBookings: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -28,44 +29,62 @@ const AdminBookings: React.FC = () => {
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBookings();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="text-center text-3xl mt-32 font-handFont text-h1Text">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-h1Text">Bookings</h1>
+    <div className=" mx-auto px-4 py-8 space-y-4 bg-gray-900/30">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">
+        Bookings
+      </h1>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {bookings.map((booking) => (
-          <div key={booking.id} className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">
+          <div
+            key={booking.id}
+            className="bg-gray-700/60 shadow-md shadow-gray-600 rounded-lg p-6"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-food_red">
               {booking.firstName} {booking.lastName}
             </h2>
-            <p>
-              <strong>Date:</strong> {format(new Date(booking.date), "PPP")}
+            <p className="text-food_yellow">
+              <strong className="text-white">Date:</strong>{" "}
+              {format(new Date(booking.date), "PPP")}
             </p>
-            <p>
-              <strong>Time:</strong> {booking.time}
+            <p className="text-food_yellow">
+              <strong className="text-white">Time:</strong> {booking.time}
             </p>
-            <p>
-              <strong>People:</strong> {booking.people}
+            <p className="text-food_yellow">
+              <strong className="text-white">People:</strong> {booking.people}
             </p>
-            <p>
-              <strong>Looking for:</strong> {booking.looking}
+            <p className="text-food_yellow">
+              <strong className="text-white">Looking for:</strong>{" "}
+              {booking.looking}
             </p>
-            <p>
-              <strong>Company:</strong> {booking.companyName || "N/A"}
+            <p className="text-food_yellow">
+              <strong className="text-white">Company:</strong>{" "}
+              {booking.companyName || "N/A"}
             </p>
-            <p>
-              <strong>Mobile:</strong> {booking.mobile}
+            <p className="text-food_yellow">
+              <strong className="text-white">Mobile:</strong> {booking.mobile}
             </p>
-            <p>
-              <strong>Email:</strong> {booking.email}
+            <p className="text-food_yellow">
+              <strong className="text-white">Email:</strong> {booking.email}
             </p>
-            <p>
-              <strong>Special Requirements:</strong>{" "}
+            <p className="text-food_yellow">
+              <strong className="text-white">Special Requirements:</strong>{" "}
               {booking.specialRequirements.join(", ") || "None"}
             </p>
           </div>

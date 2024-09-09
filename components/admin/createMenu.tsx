@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const CreateMenuItem: React.FC = () => {
   const [categories, setCategories] = useState<
@@ -38,7 +39,6 @@ const CreateMenuItem: React.FC = () => {
     if (!image) return;
 
     try {
-      // Upload image
       const formData = new FormData();
       formData.append("image", image); //name,value
 
@@ -48,7 +48,6 @@ const CreateMenuItem: React.FC = () => {
       );
       const { imageUrl } = imageResponse.data;
 
-      // Create menu item
       const menuItemResponse = await axios.post("/api/menu/menu-items", {
         name,
         price: parseFloat(price),
@@ -59,23 +58,22 @@ const CreateMenuItem: React.FC = () => {
       });
 
       if (menuItemResponse.status === 200) {
-        // Reset form
         setName("");
         setPrice("");
         setOriginalPrice("");
         setDescription("");
         setCategoryId("");
         setImage(null);
-        alert("Menu item created successfully!");
+        toast.success("Menu item created successfully!");
       } else {
-        alert("Error creating menu item");
+        toast.error("Error creating menu item");
       }
     } catch (error) {
       console.error("Error creating menu item:", error);
-      alert("Error creating menu item");
+      toast.error("Error creating menu item");
     }
   };
-  // Function to handle new category creation
+
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,22 +83,30 @@ const CreateMenuItem: React.FC = () => {
       });
 
       if (response.status === 201) {
-        setCategories([...categories, response.data]); // Add the new category to the list
+        setCategories([...categories, response.data]);
         setNewCategoryName("");
-        alert("Category created successfully!");
+        toast.success("Category created successfully!");
       } else {
-        alert("Error creating category");
+        toast.error("Error creating category");
       }
     } catch (error) {
       console.error("Error creating category:", error);
-      alert("Error creating category");
+      toast.error("Error creating category");
     }
   };
+
   return (
-    <div className="max-w-md mx-auto mt-8">
-      <form onSubmit={handleCreateCategory} className="mb-8">
-        <div className="mb-4">
-          <label htmlFor="newCategoryName" className="block mb-2">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 bg-gray-900/30 text-h1Text">
+      {/* Create New Category Form */}
+      <form
+        onSubmit={handleCreateCategory}
+        className="flex flex-col sm:flex-row items-end justify-between mb-8"
+      >
+        <div className="w-full sm:w-2/3 mb-4 sm:mb-0">
+          <label
+            htmlFor="newCategoryName"
+            className="block  md:text-base text-3xl lg:text-3xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white"
+          >
             Create New Category
           </label>
           <input
@@ -108,47 +114,58 @@ const CreateMenuItem: React.FC = () => {
             id="newCategoryName"
             value={newCategoryName}
             onChange={(e) => setNewCategoryName(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="w-full sm:w-auto py-2 px-4 rounded-lg bg-gradient-to-r from-food_red to-food_yellow text-white font-bold hover:from-red-500 hover:to-orange-500"
         >
           Create Category
         </button>
       </form>
 
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8">
-        <div className="mb-4">
-          <label htmlFor="name" className="block mb-2">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
+      {/* Create Menu Item Form */}
+      <h1 className="block  md:text-base text-3xl lg:text-3xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">
+        Create new Item
+      </h1>
+      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-4">
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex-1">
+            <label htmlFor="name" className="block mb-2 text-sm md:text-base">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required
+            />
+          </div>
+
+          <div className="flex-1">
+            <label htmlFor="price" className="block mb-2 text-sm md:text-base">
+              Price
+            </label>
+            <input
+              type="number"
+              id="price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              required
+            />
+          </div>
         </div>
-        <div className="mb-4">
-          <label htmlFor="price" className="block mb-2">
-            Price
-          </label>
-          <input
-            type="number"
-            id="price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="originalPrice" className="block mb-2">
+
+        <div>
+          <label
+            htmlFor="originalPrice"
+            className="block mb-2 text-sm md:text-base"
+          >
             Original Price (optional)
           </label>
           <input
@@ -156,57 +173,68 @@ const CreateMenuItem: React.FC = () => {
             id="originalPrice"
             value={originalPrice}
             onChange={(e) => setOriginalPrice(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block mb-2">
+
+        <div>
+          <label
+            htmlFor="description"
+            className="block mb-2 text-sm md:text-base"
+          >
             Description
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="category" className="block mb-2">
+
+        <div>
+          <label htmlFor="category" className="block mb-2 text-sm md:text-base">
             Category
           </label>
           <select
             id="category"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             required
           >
-            <option value="" disabled>
+            <option value="" className="bg-gray-800" disabled>
               Select a category
             </option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option
+                key={category.id}
+                value={category.id}
+                className="bg-gray-800"
+              >
                 {category.name}
               </option>
             ))}
           </select>
         </div>
-        <div className="mb-4">
-          <label htmlFor="image" className="block mb-2">
+
+        <div>
+          <label htmlFor="image" className="block mb-2 text-sm md:text-base">
             Image
           </label>
           <input
             type="file"
             id="image"
             onChange={handleImageChange}
-            className="w-full px-3 py-2 border rounded"
+            className="flex w-full file:px-3 rounded-lg border border-orange-700 bg-gray-800 text-sm text-gray-300 file:bg-orange-600 file:text-white file:font-semibold"
             required
           />
         </div>
+
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full sm:w-auto py-2 px-4 mt-4 rounded-lg bg-gradient-to-r from-food_red to-food_yellow text-white font-bold hover:from-red-500 hover:to-orange-500"
         >
           Create Menu Item
         </button>

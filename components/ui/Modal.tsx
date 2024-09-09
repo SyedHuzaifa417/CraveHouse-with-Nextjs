@@ -43,12 +43,12 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({
     >
       {children}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20 overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20 overflow-y-auto ">
           <div className="bg-gray-700 rounded-lg max-w-2xl w-full my-8 shadow-lg shadow-gray-700">
-            <div className="relative p-6 max-h-[80vh] overflow-y-auto">
+            <div className="relative p-6 max-h-[80vh] overflow-y-auto  scrollbar-thin scrollbar-thumb-food_red scrollbar-track-gray-700">
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                className="absolute top-4 right-4 text-orange-500 hover:text-orange-800"
               >
                 <CgClose />
               </button>

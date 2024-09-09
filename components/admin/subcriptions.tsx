@@ -31,37 +31,55 @@ const AdminSubscriptions: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center text-3xl mt-32 font-handFont text-h1Text">
+        Loading...
+      </div>
+    );
   }
 
   return (
-    <div className="bg-gray-600 flex flex-col sm:flex-row gap-20 text-pText text-base sm:text-lg md:text-lg max-w-6xl mx-auto my-8 font-bodyFont">
-      <table className="max-w-96 bg-gray-600">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 border-b">Email</th>
-            <th className="py-2 px-4 border-b">Name</th>
-            <th className="py-2 px-4 border-b">City</th>
-            <th className="py-2 px-4 border-b">Message</th>
-            <th className="py-2 px-4 border-b">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {subscriptions.map((sub) => (
-            <tr key={sub.id}>
-              <td className="py-2 px-4 border-b">{sub.email}</td>
-              <td className="py-2 px-4 border-b">{sub.name}</td>
-              <td className="py-2 px-4 border-b">{sub.city}</td>
-              <td className="py-2 px-4 border-b  truncate overflow-hidden md:max-w-md sm:max-w-sm">
-                {sub.message}
-              </td>
-              <td className="py-2 px-4 border-b">
+    <div className=" mx-auto lg:p-8 p-2 sm:p-4 space-y-4 bg-gray-900/30">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">
+        Subscriptions
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {subscriptions.map((sub) => (
+          <div
+            key={sub.id}
+            className="bg-gray-700/40 text-pText p-4 rounded-lg shadow-md shadow-gray-600 space-y-2 sm:space-y-4"
+          >
+            <div className="flex flex-col sm:flex-row justify-between">
+              <span className="font-bold">Email:</span>
+              <span className="text-food_yellow">{sub.email}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between">
+              <span className="font-bold">Name:</span>
+              <span className="text-food_yellow">{sub.name || "N/A"}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between">
+              <span className="font-bold">City:</span>
+              <span className="text-food_yellow">{sub.city || "N/A"}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between">
+              <span className="font-bold">Message:</span>
+              <span className="truncate text-food_yellow">
+                {sub.message || "No message"}
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between">
+              <span className="font-bold">Date:</span>
+              <span className="text-food_yellow">
                 {new Date(sub.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
