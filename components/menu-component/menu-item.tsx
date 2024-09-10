@@ -114,7 +114,7 @@ const MenuItems: React.FC = () => {
             }}
             className="mb-0"
           >
-            <h2 className="text-2xl font-bold mb-4 text-food_yellow">
+            <h2 className="text-2xl font-bold my-4 text-food_yellow">
               {category.name}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -123,7 +123,7 @@ const MenuItems: React.FC = () => {
                 .map((item) => (
                   <div
                     key={item.id}
-                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex justify-between relative mb-10"
+                    className="bg-gray-700 rounded-lg shadow-lg p-4 flex justify-between relative mb-1"
                   >
                     <div className="flex-grow">
                       <h3 className="text-xl font-semibold text-white">
@@ -143,13 +143,13 @@ const MenuItems: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    <div className="w-72 h-32 relative ml-4">
+                    <div className="w-52 h-32 relative ml-4">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        style={{ objectFit: "cover" }}
+                        style={{ objectFit: "cover", width: "100%" }}
                         className="rounded-lg"
                       />
                     </div>

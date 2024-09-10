@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(menuItem, { status: 201 });
+    return NextResponse.json(menuItem, { status: 200 });
   } catch (error) {
     console.error("Error creating menu item:", error);
     return NextResponse.json(

@@ -9,11 +9,14 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       await axios.post("/api/auth/register", { username, email, password });
@@ -21,8 +24,10 @@ export default function Register() {
     } catch (error: any) {
       if (error.response) {
         setError(error.response.data.error);
+        setIsLoading(false);
       } else {
         setError("An error occurred during registration");
+        setIsLoading(false);
       }
     }
   };
@@ -89,8 +94,9 @@ export default function Register() {
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-food_red hover:bg-food_red/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-food_red"
+            disabled={isLoading}
           >
-            Register
+            {isLoading ? "Registering..." : "Register"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-300">

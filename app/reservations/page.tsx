@@ -22,7 +22,7 @@ const Reservations = async () => {
         <p className="text-lg text-pText mb-4">
           Click on the link below or call{" "}
           <span className="text-orange-500 underline cursor-copy">
-            061 212 12112
+            0304 7347105
           </span>{" "}
           to make a reservation.
         </p>

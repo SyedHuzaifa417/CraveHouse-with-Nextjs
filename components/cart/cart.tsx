@@ -77,7 +77,7 @@ const Cart: React.FC = () => {
           )}
         </button>
       </SheetTrigger>
-      <SheetContent className="bg-gray-800/35 border-none shadow-xl shadow-orange-600/50 flex flex-col overflow-hidden p-4 sm:p-6">
+      <SheetContent className="bg-gray-800/35 border-none shadow-xl shadow-orange-600/50 flex flex-col overflow-hidden p-4 sm:p-6 scrollbar-none">
         {cartItems.length === 0 ? (
           <SheetHeader>
             <SheetTitle>
@@ -100,7 +100,7 @@ const Cart: React.FC = () => {
           </SheetHeader>
         ) : (
           <>
-            <div className="flex-grow overflow-y-auto">
+            <div className="flex-grow overflow-y-auto scrollbar-none">
               <SheetHeader>
                 <SheetTitle className="text-lg sm:text-xl font-bold text-h1Text">
                   {getTitle()}

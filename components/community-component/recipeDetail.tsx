@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,9 +8,13 @@ import { MdPersonPin } from "react-icons/md";
 import { BiCategory } from "react-icons/bi";
 import { IoMdPrint } from "react-icons/io";
 import { FaShareNodes } from "react-icons/fa6";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 interface RecipeDetailsProps {
   recipe: {
+    id: string;
     title: string;
     description: string;
     image: string;
@@ -35,7 +39,52 @@ const RecipeDetails: React.FC<RecipeDetailsProps> = ({ recipe }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<
     Record<number, boolean>
   >({});
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
+
+  const fetchBookmarkStatus = useCallback(async () => {
+    if (session?.user?.id) {
+      try {
+        const response = await axios.get(`/api/user?userId=${session.user.id}`);
+        const bookmarkedRecipes = response.data.bookmarkedRecipes.map(
+          (r: any) => r.id
+        );
+        setIsBookmarked(bookmarkedRecipes.includes(recipe.id));
+      } catch (error) {
+        console.error("Error fetching bookmark status:", error);
+      }
+    }
+  }, [session, recipe.id]);
+
+  useEffect(() => {
+    fetchBookmarkStatus();
+  }, [fetchBookmarkStatus]);
+
+  const toggleBookmark = async () => {
+    if (!session?.user) {
+      toast.error("Please log in to bookmark recipes");
+      return;
+    }
+
+    try {
+      const action = isBookmarked ? "removeBookmark" : "addBookmark";
+      await axios.patch(`/api/user?userId=${session.user.id}`, {
+        action,
+        recipeId: recipe.id,
+      });
+
+      setIsBookmarked(!isBookmarked);
+      toast.success(
+        isBookmarked
+          ? "Recipe removed from bookmarks"
+          : "Recipe added to bookmarks"
+      );
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      toast.error("Failed to update bookmark");
+    }
+  };
 
   if (!recipe) {
     return <div className="text-center text-h1Text">Loading...</div>;
@@ -139,8 +188,16 @@ const RecipeDetails: React.FC<RecipeDetailsProps> = ({ recipe }) => {
             >
               <FaShareNodes /> Share
             </button>
-            <button className="w-24  bg-gray-800 shadow-md shadow-gray-600 hover:bg-orange-800 p-2 rounded-lg flex items-center gap-1 justify-center">
-              <FaBookmark /> Save
+            <button
+              onClick={toggleBookmark}
+              className={`w-24 shadow-md shadow-gray-600 p-2 rounded-lg flex items-center gap-1 justify-center ${
+                isBookmarked
+                  ? "bg-orange-500"
+                  : "bg-gray-800 hover:bg-orange-800"
+              }`}
+            >
+              <FaBookmark />
+              {isBookmarked ? "Saved" : "Save"}
             </button>
           </div>
         </div>

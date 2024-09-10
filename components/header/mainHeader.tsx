@@ -27,6 +27,7 @@ import { HiOutlineSupport } from "react-icons/hi";
 import { FiSend } from "react-icons/fi";
 import { useModal } from "../ui/Modal";
 import Profile from "./Profile";
+import UserBookmarks from "./Bookmarks";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -108,7 +109,9 @@ const Header = () => {
           <div className="flex items-center gap-6 ml-20">
             <Cart />
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                className={status === "loading" ? "pointer-events-none" : ""}
+              >
                 {status === "loading" ? (
                   <FaUserAlt className="text-pText text-[1.4rem] animate-pulse " />
                 ) : session ? (
@@ -158,7 +161,9 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => openModal(<Cart />)}
+                      onClick={() =>
+                        openModal(<UserBookmarks userId={session?.user.id} />)
+                      }
                       className="flex items-center gap-1"
                     >
                       <MdOutlineBookmarks /> Bookmarks
