@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hash, compare } from "bcrypt";
 
-// Handle GET requests
+export const dynamic = "force-dynamic";
+
 export async function GET(req: any) {
   const userId = req.nextUrl.searchParams.get("userId");
 
@@ -59,7 +60,6 @@ export async function GET(req: any) {
   }
 }
 
-// Handle PATCH requests
 export async function PATCH(req: any) {
   const userId = req.nextUrl.searchParams.get("userId");
   const data = await req.json();
@@ -137,7 +137,6 @@ export async function PATCH(req: any) {
   }
 }
 
-// Handle DELETE requests
 export async function DELETE(req: any) {
   const userId = req.nextUrl.searchParams.get("userId");
 
@@ -163,7 +162,6 @@ export async function DELETE(req: any) {
   }
 }
 
-// Handle POST requests for password validation
 export async function POST(req: any) {
   const userId = req.nextUrl.searchParams.get("userId");
   const { currentPassword, newPassword } = await req.json();
@@ -226,10 +224,3 @@ export async function POST(req: any) {
     );
   }
 }
-
-// Allow GET, PATCH, DELETE, and POST requests
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
