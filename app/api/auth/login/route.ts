@@ -27,15 +27,9 @@ export async function POST(req: Request) {
       },
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
-    if (!user.password) {
-      return NextResponse.json(
-        { error: "Password not set for user" },
         { status: 401 }
       );
     }
